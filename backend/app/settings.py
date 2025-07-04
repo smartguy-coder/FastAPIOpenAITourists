@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Tourism suggester ✨"
     DEBUG: bool = False
 
+    OPENAI_API_KEY: str
+
 
 @lru_cache()
 def get_settings() -> Settings:
