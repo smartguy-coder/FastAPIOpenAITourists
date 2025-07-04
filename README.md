@@ -3,4 +3,4 @@
 - download project
 - set .env-example -> .env
 - make up
-- open 127.0.0.1:12321
+- open [localhost](http://127.0.0.1/api/docs)
