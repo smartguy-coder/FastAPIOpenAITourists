@@ -1,0 +1,27 @@
+services:
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    container_name: backend
+    hostname: backend
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./backend/app:/app
+    ports:
+      - "12321:12321"
+
+    command: |
+      sh -c "
+      uvicorn main:app --port=12321 --host=0.0.0.0 --reload
+      "
+    networks:
+      - main_network
+
+
+networks:
+  main_network:
+    driver: bridge
