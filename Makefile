@@ -9,5 +9,4 @@ down:
 	${DC} down
 
 bash:
-	@echo 'run -> docker compose exec -it backend_api bash'
 	${DC} exec -it ${API_CONTAINER} bash
