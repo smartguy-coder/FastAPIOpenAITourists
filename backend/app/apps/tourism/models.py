@@ -9,10 +9,6 @@ from sqlalchemy.sql import func
 
 
 class TourismRequestHistory(Base):
-    __tablename__ = "tourism_request_history"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    created_at: Mapped[datetime] = mapped_column(default=func.now())
     text: Mapped[str] = mapped_column(String(2048), index=True)
     exclude: Mapped[str] = mapped_column(String(2048))
     num_places: Mapped[int]
