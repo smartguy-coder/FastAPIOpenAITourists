@@ -1,3 +1,5 @@
+import random
+
 from fastapi import APIRouter, Header, status, HTTPException, Query
 
 from ai_service.bl import get_ai_tourism_info
@@ -10,9 +12,11 @@ router_tourism = APIRouter()
 @router_tourism.get("/")
 async def get_destination(
     request: str = Query(..., min_length=3, max_length=2048),
-    num_places: int = Query(default=4, gt=0, le=100),
+    num_places: int | None = Query(default=None, gt=0, le=20),
     exclude: str = Query("", min_length=0, max_length=2048),
 ) -> list[ResponseTourismDestinationSchema]:
+    if not num_places:
+        num_places = random.randint(3, 4)
 
     return await get_ai_tourism_info(
         user_request=request,

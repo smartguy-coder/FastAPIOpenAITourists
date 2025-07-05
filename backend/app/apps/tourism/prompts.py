@@ -5,14 +5,15 @@ def get_exclude_prompt(exclude: str) -> str:
     if not exclude:
         return ""
     return (
-        f"Do NOT include destinations related to: '{exclude}'. "
-        f"Exclude anything that is clearly associated with this term.\n\n"
+        f"Strictly DO NOT include any destinations related to: '{exclude}'. "
+        f"If any destination is clearly associated with '{exclude}', exclude it completely.\n\n"
     )
 
 
 class TourismSystemPromptsEnum(StrEnum):
     SUGGEST_LOCATION = (
         "You are a helpful travel assistant.\n"
+        "IMPORTANT: Respond in the same language the user used in their request.\n"
         "Based on the client's request, suggest exactly {num_placed} tourist destinations.\n"
         "Respond strictly in JSON format as a list of objects, each with the following fields:\n"
         "- name: string — name of the destination\n"
