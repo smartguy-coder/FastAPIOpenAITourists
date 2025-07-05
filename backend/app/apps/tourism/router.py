@@ -1,23 +1,26 @@
 import random
 from typing import Annotated
 
-from fastapi import APIRouter, Header, status, HTTPException, Query, Depends
-
 from ai_service.bl import get_ai_tourism_info
+from apps.common_resourses.schemas import SearchParamsSchema
 from apps.tourism.crud import create_history, get_history_paginated
 from apps.tourism.prompts import TourismSystemPromptsEnum, get_exclude_prompt
-from apps.tourism.schemas import ResponseTourismDestinationSchema, SearchParamsSchema, UserRequestSchema, \
-    PaginationSavedHistoryResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from apps.tourism.schemas import (
+    PaginationSavedHistoryResponse,
+    ResponseTourismDestinationSchema,
+    UserRequestSchema,
+)
 from database.dependencies import get_async_session
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router_tourism = APIRouter()
 
 
 @router_tourism.get("/")
 async def get_destination(
-    user_request: Annotated[UserRequestSchema, Depends()], session: AsyncSession = Depends(get_async_session)
+    user_request: Annotated[UserRequestSchema, Depends()],
+    session: AsyncSession = Depends(get_async_session),
 ) -> list[ResponseTourismDestinationSchema]:
     if not user_request.num_places:
         user_request.num_places = random.randint(3, 4)
@@ -33,7 +36,7 @@ async def get_destination(
         # todo retry one time more? may be 2x costly.
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"AI failed to return exactly {user_request.num_places} places."
+            detail=f"AI failed to return exactly {user_request.num_places} places.",
         )
 
     await create_history(
@@ -49,7 +52,8 @@ async def get_destination(
 
 @router_tourism.get("/history")
 async def get_history(
-    params: Annotated[SearchParamsSchema, Depends()], session: AsyncSession = Depends(get_async_session)
+    params: Annotated[SearchParamsSchema, Depends()],
+    session: AsyncSession = Depends(get_async_session),
 ) -> PaginationSavedHistoryResponse:
     response = await get_history_paginated(params, session)
     return response

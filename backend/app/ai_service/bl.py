@@ -1,11 +1,10 @@
 import logging
-from fastapi import HTTPException, status
-
-from pydantic_ai import Agent
-from pydantic_ai.settings import ModelSettings
 
 from ai_service.ai_models import OpenAIModelsEnum
 from apps.tourism.schemas import ResponseTourismDestinationSchema
+from fastapi import HTTPException, status
+from pydantic_ai import Agent
+from pydantic_ai.settings import ModelSettings
 
 
 async def get_ai_tourism_info(
@@ -16,7 +15,7 @@ async def get_ai_tourism_info(
         system_prompt=system_prompt,
         output_type=list[ResponseTourismDestinationSchema],
         output_retries=5,
-        model_settings=ModelSettings(timeout=25)
+        model_settings=ModelSettings(timeout=25),
     )
 
     try:
@@ -25,5 +24,6 @@ async def get_ai_tourism_info(
     except Exception as e:
         logging.error(f"Error in get_ai_tourism_info: {e}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="Request to AI agent timed out or failed."
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            detail="Request to AI agent timed out or failed.",
         )

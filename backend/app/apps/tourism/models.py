@@ -1,13 +1,11 @@
 from datetime import datetime
-from typing import Optional
 
 import sqlalchemy as sa
-from sqlalchemy.sql import func
-from sqlalchemy import String
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from database.base import Base
+from sqlalchemy import String
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 
 class TourismRequestHistory(Base):

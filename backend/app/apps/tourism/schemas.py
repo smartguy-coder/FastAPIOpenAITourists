@@ -1,6 +1,6 @@
-from enum import StrEnum
-from typing import Annotated, Optional
+from datetime import datetime
 
+from apps.common_resourses.schemas import PaginationResponse
 from pydantic import BaseModel, Field
 
 
@@ -21,31 +21,17 @@ class UserRequestSchema(BaseModel):
     num_places: int | None = Field(default=None, gt=0, le=10)
 
 
-class SortDirEnum(StrEnum):
-    ASC = 'asc'
-    DESC = 'desc'
+class SavedHistoryItemSchema(BaseModel):
+    id: int
+    created_at: datetime
+    text: str
+    exclude: str
+    num_places: int
+    response_json: list[ResponseTourismDestinationSchema]
 
-
-class SortByEnum(StrEnum):
-    ID = 'id'
-    CREATED_AT = 'created_at'
-
-
-class SearchParamsSchema(BaseModel):
-    q: Annotated[Optional[str], Field(default=None)] = None
-    page: Annotated[int, Field(default=1, ge=1)]
-    limit: Annotated[int, Field(default=10, ge=1, le=50)]
-    direction: SortDirEnum = SortDirEnum.DESC
-    sort_by: SortByEnum = SortByEnum.ID
-
-
-class PaginationResponse(BaseModel):
-    items: list
-    total: int
-    page: int
-    limit: int
-    pages: int
+    class Config:
+        from_attributes = True
 
 
 class PaginationSavedHistoryResponse(PaginationResponse):
-    items: list[ResponseTourismDestinationSchema]
+    items: list[SavedHistoryItemSchema]

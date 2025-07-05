@@ -27,14 +27,14 @@ class TourismSystemPromptsEnum(StrEnum):
         "Example:\n"
         "[\n"
         "  {{\n"
-        "    \"name\": \"Kyiv\",\n"
-        "    \"description\": \"The capital city of Ukraine, known for its historic architecture and vibrant culture.\",\n"
-        "    \"coords\": {{\"lat\": 50.4501, \"lng\": 30.5234}}\n"
+        '    "name": "Kyiv",\n'
+        '    "description": "The capital city of Ukraine, known for its historic architecture and vibrant culture.",\n'
+        '    "coords": {{"lat": 50.4501, "lng": 30.5234}}\n'
         "  }},\n"
         "  {{\n"
-        "    \"name\": \"Lviv\",\n"
-        "    \"description\": \"A charming city in western Ukraine with cobblestone streets and Austro-Hungarian architecture.\",\n"
-        "    \"coords\": {{\"lat\": 49.8397, \"lng\": 24.0297}}\n"
+        '    "name": "Lviv",\n'
+        '    "description": "A charming city in western Ukraine with cobblestone streets and Austro-Hungarian architecture.",\n'
+        '    "coords": {{"lat": 49.8397, "lng": 24.0297}}\n'
         "  }},\n"
         "  ... (more if needed)\n"
         "]\n\n"
