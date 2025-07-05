@@ -1,27 +1,55 @@
 import random
+from typing import Annotated
 
-from fastapi import APIRouter, Header, status, HTTPException, Query
+from fastapi import APIRouter, Header, status, HTTPException, Query, Depends
 
 from ai_service.bl import get_ai_tourism_info
+from apps.tourism.crud import create_history, get_history_paginated
 from apps.tourism.prompts import TourismSystemPromptsEnum, get_exclude_prompt
-from apps.tourism.schemas import ResponseTourismDestinationSchema
+from apps.tourism.schemas import ResponseTourismDestinationSchema, SearchParamsSchema, UserRequestSchema, \
+    PaginationSavedHistoryResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.dependencies import get_async_session
 
 router_tourism = APIRouter()
 
 
 @router_tourism.get("/")
 async def get_destination(
-    request: str = Query(..., min_length=3, max_length=2048),
-    num_places: int | None = Query(default=None, gt=0, le=20),
-    exclude: str = Query("", min_length=0, max_length=2048),
+    user_request: Annotated[UserRequestSchema, Depends()], session: AsyncSession = Depends(get_async_session)
 ) -> list[ResponseTourismDestinationSchema]:
-    if not num_places:
-        num_places = random.randint(3, 4)
+    if not user_request.num_places:
+        user_request.num_places = random.randint(3, 4)
 
-    return await get_ai_tourism_info(
-        user_request=request,
+    output = await get_ai_tourism_info(
+        user_text=user_request.text,
         system_prompt=TourismSystemPromptsEnum.SUGGEST_LOCATION.format(
-            num_placed=num_places,
-            exclude_prompt=get_exclude_prompt(exclude=exclude),
+            num_placed=user_request.num_places,
+            exclude_prompt=get_exclude_prompt(exclude=user_request.exclude),
         ),
     )
+    if len(output) != user_request.num_places:
+        # todo retry one time more? may be 2x costly.
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"AI failed to return exactly {user_request.num_places} places."
+        )
+
+    await create_history(
+        text=user_request.text,
+        num_places=user_request.num_places,
+        exclude=user_request.exclude,
+        response_json=[row.dict() for row in output],
+        session=session,
+    )
+
+    return output
+
+
+@router_tourism.get("/history")
+async def get_history(
+    params: Annotated[SearchParamsSchema, Depends()], session: AsyncSession = Depends(get_async_session)
+) -> PaginationSavedHistoryResponse:
+    response = await get_history_paginated(params, session)
+    return response
